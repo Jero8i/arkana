@@ -4,9 +4,15 @@ import React, { useState, useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger);
-}
+// Ensure GSAP is only initialized on client side
+let gsapInitialized = false;
+
+const initGSAP = () => {
+  if (typeof window !== "undefined" && !gsapInitialized) {
+    gsap.registerPlugin(ScrollTrigger);
+    gsapInitialized = true;
+  }
+};
 
 interface PricingPacksProps {
   showForm: boolean;
@@ -222,7 +228,8 @@ export default function PricingPacks({ showForm, setShowForm, onPackSelect }: Pr
   );
 
   useEffect(() => {
-    if (tabsRef.current) {
+    initGSAP();
+    if (tabsRef.current && typeof window !== "undefined") {
       gsap.fromTo(
         tabsRef.current.children,
         { opacity: 0, y: 20 },
@@ -232,7 +239,8 @@ export default function PricingPacks({ showForm, setShowForm, onPackSelect }: Pr
   }, []);
 
   useEffect(() => {
-    if (titleRef.current && blurbRef.current && cardsRef.current) {
+    initGSAP();
+    if (titleRef.current && blurbRef.current && cardsRef.current && typeof window !== "undefined") {
       gsap.fromTo(
         titleRef.current,
         { opacity: 0, scale: 0.9 },
@@ -254,38 +262,43 @@ export default function PricingPacks({ showForm, setShowForm, onPackSelect }: Pr
   }, [tab]);
 
   useEffect(() => {
-    if (extrasRef.current && contactRef.current) {
-      gsap.fromTo(
-        extrasRef.current,
-        { opacity: 0, y: 30 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.8,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: extrasRef.current,
-            start: "top 85%",
-            toggleActions: "play none none reverse"
+    initGSAP();
+    if (extrasRef.current && contactRef.current && typeof window !== "undefined") {
+      const timer = setTimeout(() => {
+        gsap.fromTo(
+          extrasRef.current,
+          { opacity: 0, y: 30 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: extrasRef.current,
+              start: "top 85%",
+              toggleActions: "play none none reverse"
+            }
           }
-        }
-      );
+        );
 
-      gsap.fromTo(
-        contactRef.current,
-        { opacity: 0, y: 30 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.8,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: contactRef.current,
-            start: "top 85%",
-            toggleActions: "play none none reverse"
+        gsap.fromTo(
+          contactRef.current,
+          { opacity: 0, y: 30 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: contactRef.current,
+              start: "top 85%",
+              toggleActions: "play none none reverse"
+            }
           }
-        }
-      );
+        );
+      }, 100);
+      
+      return () => clearTimeout(timer);
     }
   }, []);
 
