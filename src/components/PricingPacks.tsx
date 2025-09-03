@@ -269,6 +269,11 @@ export default function PricingPacks({ showForm, setShowForm, onPackSelect }: Pr
                 try {
                   console.log('Solicitar button clicked, current showForm:', showForm);
                   setShowForm(!showForm);
+                  if (!showForm) {
+                    setTimeout(() => {
+                      document.querySelector('[data-form-section]')?.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                  }
                 } catch (error) {
                   console.error('Solicitar button error:', error);
                   alert('Error: ' + (error instanceof Error ? error.message : String(error)));
@@ -279,7 +284,15 @@ export default function PricingPacks({ showForm, setShowForm, onPackSelect }: Pr
             >
               {showForm ? 'Ocultar Formulario' : 'Solicitar Presupuesto'}
             </button>
-            <button className="rounded-xl bg-white/10 hover:bg-white/20 text-slate-100 font-medium px-4 py-2">Contactar por WhatsApp</button>
+            <button 
+              onClick={() => {
+                const message = `Hola! Me interesa solicitar un presupuesto personalizado. ¿Podrían darme más información?`;
+                window.open(`https://wa.me/5492257400465?text=${encodeURIComponent(message)}`, '_blank');
+              }}
+              className="rounded-xl bg-white/10 hover:bg-white/20 text-slate-100 font-medium px-4 py-2"
+            >
+              Contactar por WhatsApp
+            </button>
           </div>
         </section>
 
