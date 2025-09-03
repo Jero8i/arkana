@@ -31,4 +31,4 @@ jobs:
         server: win8168.site4now.net
         username: arkana
         password: ${{ secrets.FTP_PASSWORD }}
-        local-dir: ./out/
+        local-dir: ./dist/

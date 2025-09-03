@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -329,7 +329,7 @@ export default function PricingPacks({ showForm, setShowForm, onPackSelect }: Pr
           <p ref={blurbRef} className="text-center text-slate-300 max-w-3xl mx-auto mb-6">{PACKS[tab].blurb}</p>
 
           <div ref={cardsRef} className="grid md:grid-cols-3 gap-4 md:gap-6">
-            {PACKS[tab].tiers.map((tier, i) => (
+            {PACKS[tab].tiers.map((tier) => (
               <div
                 key={tier.name}
                 className="rounded-2xl bg-slate-800/60 border border-white/10 shadow-xl p-6 flex flex-col"
