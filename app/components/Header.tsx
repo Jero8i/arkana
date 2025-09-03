@@ -47,22 +47,25 @@ export default function Header() {
       </div>
 
       <div ref={logoRef} className="relative z-10 mb-4">
-        <div className="relative group">
-          {/* Glow effect behind logo */}
-          <div className="absolute inset-0 bg-gradient-to-r from-teal-400/20 to-cyan-400/20 blur-3xl scale-110 opacity-50 group-hover:opacity-75 transition-opacity duration-500" />
+        <div className="relative group inline-block">
+          {/* Gradient backdrop */}
+          <div className="absolute -inset-8 bg-gradient-to-br from-teal-500/30 via-cyan-500/20 to-blue-500/30 rounded-3xl blur-2xl opacity-60 group-hover:opacity-80 transition-all duration-500" />
           
-          <Image
-            src="/arkana-logo.png"
-            alt="Arkana Studio"
-            width={800}
-            height={300}
-            className="mx-auto relative z-10 drop-shadow-2xl hover:scale-105 transition-transform duration-300"
-            priority
-          />
+          {/* Secondary glow */}
+          <div className="absolute -inset-4 bg-gradient-to-r from-teal-400/40 to-cyan-400/40 rounded-2xl blur-xl opacity-40 group-hover:opacity-60 transition-all duration-300" />
+          
+          {/* Logo container with enhanced styling */}
+          <div className="relative bg-gradient-to-br from-white/95 to-gray-50/95 backdrop-blur-sm rounded-2xl p-4 shadow-2xl border border-white/20 group-hover:shadow-teal-500/25 transition-all duration-300">
+            <Image
+              src="/logo.jpg"
+              alt="Arkana Studio"
+              width={600}
+              height={300}
+              className="mx-auto relative z-10 rounded-xl hover:scale-105 transition-transform duration-300"
+              priority
+            />
+          </div>
         </div>
-        
-        {/* Subtitle with gradient */}
-
       </div>
     </header>
   );
