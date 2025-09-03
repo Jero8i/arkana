@@ -11,7 +11,7 @@ if (typeof window !== "undefined") {
 interface PricingPacksProps {
   showForm: boolean;
   setShowForm: (show: boolean) => void;
-  onPackSelect?: (packInfo: { service: string; tier: string; price: string }) => void;
+  onPackSelect?: (packInfo: { service: string; tier: string; price: string; serviceKey?: string }) => void;
 }
 
 export default function PricingPacks({ showForm, setShowForm, onPackSelect }: PricingPacksProps) {
