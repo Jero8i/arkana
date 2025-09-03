@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arkana Studio - Fotografía Profesional</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .fade-in { opacity: 0; transform: translateY(20px); transition: all 0.8s ease; }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 text-slate-100 py-10 px-4">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <header class="text-center mb-12 py-12">
+            <div class="mb-4">
+                <img src="/logo.jpg" alt="Arkana Studio" class="mx-auto rounded-xl w-96 h-48 object-cover">
+            </div>
+        </header>
+
+        <!-- Pricing Packs -->
+        <div class="flex justify-center gap-2 mb-6 flex-wrap fade-in">
+            <button onclick="showTab('book')" id="tab-book" class="px-4 py-2 rounded-full text-sm md:text-base transition bg-teal-400/20 text-teal-300 ring-1 ring-inset ring-teal-400/40">
+                📸 Book
+            </button>
+            <button onclick="showTab('producto')" id="tab-producto" class="px-4 py-2 rounded-full text-sm md:text-base transition bg-white/5 text-slate-300 hover:bg-white/10">
+                📦 Producto/Catálogo
+            </button>
+            <button onclick="showTab('redes')" id="tab-redes" class="px-4 py-2 rounded-full text-sm md:text-base transition bg-white/5 text-slate-300 hover:bg-white/10">
+                ✨ Redes
+            </button>
+            <button onclick="showTab('eventos')" id="tab-eventos" class="px-4 py-2 rounded-full text-sm md:text-base transition bg-white/5 text-slate-300 hover:bg-white/10">
+                🎉 Eventos
+            </button>
+        </div>
+
+        <section class="mb-10 fade-in">
+            <h2 id="pack-title" class="text-center text-2xl md:text-3xl font-medium mb-2 flex items-center justify-center gap-2">
+                💎 Book de fotos (retrato)
+            </h2>
+            <p id="pack-blurb" class="text-center text-slate-300 max-w-3xl mx-auto mb-6">
+                Sesiones pensadas para armar o renovar tu porfolio: dirección de poses, luz cuidada y retoque profesional.
+            </p>
+
+            <div id="pack-cards" class="grid md:grid-cols-3 gap-4 md:gap-6">
+                <!-- Cards will be populated by JavaScript -->
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section class="mt-10 bg-white/5 rounded-2xl p-6 border border-white/10 fade-in">
+            <h3 class="text-xl font-medium mb-2">¿Necesitás algo personalizado?</h3>
+            <p class="text-slate-200">
+                Además de nuestros packs, ofrecemos presupuestos personalizados según tu propuesta.
+            </p>
+            <div class="mt-4 flex flex-wrap gap-2">
+                <button onclick="toggleForm()" id="form-toggle" class="rounded-xl bg-teal-500/90 hover:bg-teal-400 text-slate-900 font-medium px-4 py-2">
+                    Solicitar Presupuesto
+                </button>
+                <button class="rounded-xl bg-white/10 hover:bg-white/20 text-slate-100 font-medium px-4 py-2">Contactar por WhatsApp</button>
+            </div>
+        </section>
+
+        <!-- Form -->
+        <section id="contact-form" class="mb-16 bg-slate-800/30 rounded-3xl p-8 border border-white/10" style="display: none;">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-8 bg-gradient-to-r from-teal-300 to-cyan-300 bg-clip-text text-transparent">
+                Solicitar Presupuesto
+            </h2>
+            <form class="max-w-2xl mx-auto space-y-6">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300 mb-2">Nombre *</label>
+                        <input type="text" required class="w-full px-4 py-3 bg-slate-700/50 border border-white/10 rounded-xl text-slate-100 placeholder-slate-400 focus:border-teal-400 focus:outline-none" placeholder="Tu nombre completo">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300 mb-2">Email *</label>
+                        <input type="email" required class="w-full px-4 py-3 bg-slate-700/50 border border-white/10 rounded-xl text-slate-100 placeholder-slate-400 focus:border-teal-400 focus:outline-none" placeholder="tu@email.com">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">Contanos sobre tu proyecto *</label>
+                    <textarea required rows="4" class="w-full px-4 py-3 bg-slate-700/50 border border-white/10 rounded-xl text-slate-100 placeholder-slate-400 focus:border-teal-400 focus:outline-none resize-none" placeholder="Describí tu proyecto, fechas, locación, cantidad de fotos, etc."></textarea>
+                </div>
+                <button type="submit" class="w-full bg-teal-500/90 hover:bg-teal-400 text-slate-900 font-medium py-3 px-6 rounded-xl">
+                    Enviar Solicitud
+                </button>
+            </form>
+        </section>
+    </div>
+
+    <script>
+        const PACKS = {
+            book: {
+                title: "Book de fotos (retrato)",
+                blurb: "Sesiones pensadas para armar o renovar tu porfolio: dirección de poses, luz cuidada y retoque profesional.",
+                tiers: [
+                    { name: "Básico", price: "$120.000", features: ["1 h de sesión · 1 locación", "1 cambio de vestuario", "25 fotos editadas", "5 retoques de piel", "Entrega 3–5 días"] },
+                    { name: "Intermedio", price: "$180.000", features: ["2 h · hasta 2 locaciones", "2–3 cambios de vestuario", "45 fotos editadas", "10 retoques de piel", "1 reel vertical"] },
+                    { name: "Premium", price: "$240.000", features: ["3 h · estudio incluido", "3–4 cambios", "70 fotos editadas", "20 retoques de piel", "2 reels"] }
+                ]
+            },
+            producto: {
+                title: "Foto producto / catálogo",
+                blurb: "Imágenes limpias y consistentes para e‑commerce y marketplaces.",
+                tiers: [
+                    { name: "Básico", price: "$220.000", features: ["Hasta 15 productos", "3 ángulos por producto", "PNG recortado", "Renombrado por SKU", "Entrega 5 días"] },
+                    { name: "Intermedio", price: "$300.000", features: ["Hasta 30 productos", "4 ángulos + detalle macro", "Variantes para ML y Shopify", "1 GIF behind scenes", "Entrega 5–7 días"] },
+                    { name: "Premium", price: "$420.000", features: ["Hasta 60 productos", "5 ángulos por producto", "Mix e‑commerce + lifestyle", "2 reels o stop‑motion", "Mini catálogo PDF"] }
+                ]
+            },
+            redes: {
+                title: "Redes sociales (plan mensual)",
+                blurb: "Contenido mensual listo para publicar: fotos, reels, copies y calendario.",
+                tiers: [
+                    { name: "Básico", price: "$260.000/mes", features: ["8 posts + 2 reels + 8 stories", "1 sesión de 2h/mes", "Calendario editorial", "1 ronda de cambios"] },
+                    { name: "Intermedio", price: "$340.000/mes", features: ["12 posts + 4 reels + 16 stories", "1 sesión de 4h/mes", "Edición de video", "2 plantillas de diseño"] },
+                    { name: "Premium", price: "$480.000/mes", features: ["16 posts + 6 reels + 24 stories", "Hasta 6h de producción", "Community management", "Reporte avanzado"] }
+                ]
+            },
+            eventos: {
+                title: "Cobertura de eventos",
+                blurb: "Cobertura foto + video para eventos sociales, corporativos y culturales.",
+                tiers: [
+                    { name: "Básico", price: "$230.000", features: ["3 horas de cobertura", "30 fotos editadas", "2 reels de 30s", "1 video resumen", "Entrega 3–5 días"] },
+                    { name: "Intermedio", price: "$300.000", features: ["5 horas de cobertura", "50 fotos editadas", "4 reels de 30s", "1 video de 1:30 min", "Entrega 5 días"] },
+                    { name: "Premium", price: "$350.000", features: ["7 horas de cobertura", "100 fotos editadas", "6 reels de 30s", "1 video largo", "Entrega 5–7 días"] }
+                ]
+            }
+        };
+
+        let currentTab = 'book';
+        let showingForm = false;
+
+        function showTab(tab) {
+            currentTab = tab;
+            
+            // Update tab buttons
+            document.querySelectorAll('[id^="tab-"]').forEach(btn => {
+                btn.className = "px-4 py-2 rounded-full text-sm md:text-base transition bg-white/5 text-slate-300 hover:bg-white/10";
+            });
+            document.getElementById(`tab-${tab}`).className = "px-4 py-2 rounded-full text-sm md:text-base transition bg-teal-400/20 text-teal-300 ring-1 ring-inset ring-teal-400/40";
+            
+            // Update content
+            const pack = PACKS[tab];
+            document.getElementById('pack-title').innerHTML = `💎 ${pack.title}`;
+            document.getElementById('pack-blurb').textContent = pack.blurb;
+            
+            // Update cards
+            const cardsContainer = document.getElementById('pack-cards');
+            cardsContainer.innerHTML = pack.tiers.map(tier => `
+                <div class="rounded-2xl bg-slate-800/60 border border-white/10 shadow-xl p-6 flex flex-col">
+                    <div class="flex items-center gap-2 text-teal-300 mb-1">
+                        <span>💎</span>
+                        <span class="uppercase tracking-wide text-sm">${tier.name}</span>
+                    </div>
+                    <div class="text-3xl md:text-4xl font-semibold mb-4">${tier.price}</div>
+                    <ul class="space-y-2 text-slate-200">
+                        ${tier.features.map(f => `<li class="flex items-start gap-2"><span class="mt-0.5 text-teal-300">✓</span><span>${f}</span></li>`).join('')}
+                    </ul>
+                    <div class="mt-6">
+                        <button onclick="openWhatsApp('${tier.name}', '${tier.price}')" class="w-full rounded-xl bg-teal-500/90 hover:bg-teal-400 text-slate-900 font-medium py-2.5 transition">
+                            Pedir este pack
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleForm() {
+            showingForm = !showingForm;
+            const form = document.getElementById('contact-form');
+            const button = document.getElementById('form-toggle');
+            
+            if (showingForm) {
+                form.style.display = 'block';
+                button.textContent = 'Ocultar Formulario';
+            } else {
+                form.style.display = 'none';
+                button.textContent = 'Solicitar Presupuesto';
+            }
+        }
+
+        function openWhatsApp(tier, price) {
+            const message = `Hola! Me interesa el pack ${PACKS[currentTab].title} - ${tier} (${price}). ¿Podrían darme más información?`;
+            window.open(`https://wa.me/6492616149877?text=${encodeURIComponent(message)}`, '_blank');
+        }
+
+        // Fade in animation
+        function fadeInElements() {
+            const elements = document.querySelectorAll('.fade-in');
+            elements.forEach((el, index) => {
+                setTimeout(() => {
+                    el.classList.add('visible');
+                }, index * 200);
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            showTab('book');
+            setTimeout(fadeInElements, 100);
+        });
+    </script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-# Photography Pricing Website
+# Photography Pricing Website - React Version
 
 A modern React website showcasing photography service packages with interactive pricing tiers.
 
@@ -21,18 +21,28 @@ npm install
 npm run dev
 ```
 
-3. Open [http://localhost:3000](http://localhost:3000) in your browser.
+3. Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 ## Tech Stack
 
-- Next.js 14
 - React 18
 - TypeScript
+- Vite
 - Tailwind CSS
+- GSAP (for animations)
 
-## Build
+## Build for Production
 
 ```bash
 npm run build
-npm start
 ```
+
+The build output will be in the `dist/` folder. Upload the contents of this folder to your hosting provider.
+
+## Deployment
+
+1. Run `npm run build`
+2. Upload all files from the `dist/` folder to your web hosting
+3. Your site will be live!
+
+This version is compatible with any static hosting provider.
