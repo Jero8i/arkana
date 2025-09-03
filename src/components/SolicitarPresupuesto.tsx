@@ -22,6 +22,8 @@ export default function SolicitarPresupuesto({ selectedPack }: SolicitarPresupue
     servicio: selectedPack?.serviceKey || "",
     mensaje: selectedPack ? `Me interesa el pack ${selectedPack.service} - ${selectedPack.tier} (${selectedPack.price}). ` : ""
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
   useEffect(() => {
     if (selectedPack) {
@@ -56,10 +58,45 @@ export default function SolicitarPresupuesto({ selectedPack }: SolicitarPresupue
     }
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    // Handle form submission here
+    console.log('Form submitted with data:', formData);
+    setIsSubmitting(true);
+    setSubmitStatus('idle');
+
+    try {
+      const apiUrl = process.env.NODE_ENV === 'production' 
+        ? 'https://your-server-domain.com/api/send-email' 
+        : 'http://localhost:3001/api/send-email';
+      
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      console.log('Response status:', response.status);
+      
+      if (response.ok) {
+        setSubmitStatus('success');
+        setFormData({
+          nombre: "",
+          email: "",
+          telefono: "",
+          servicio: "",
+          mensaje: ""
+        });
+      } else {
+        setSubmitStatus('error');
+      }
+    } catch (error) {
+      console.error('Fetch error:', error);
+      setSubmitStatus('error');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -159,11 +196,24 @@ export default function SolicitarPresupuesto({ selectedPack }: SolicitarPresupue
           />
         </div>
 
+        {submitStatus === 'success' && (
+          <div className="bg-green-500/20 border border-green-500/40 text-green-300 p-4 rounded-xl mb-4">
+            ¡Mensaje enviado correctamente! Te contactaremos pronto.
+          </div>
+        )}
+        
+        {submitStatus === 'error' && (
+          <div className="bg-red-500/20 border border-red-500/40 text-red-300 p-4 rounded-xl mb-4">
+            Error al enviar el mensaje. Por favor, intenta nuevamente.
+          </div>
+        )}
+
         <button
           type="submit"
-          className="w-full bg-teal-500/90 hover:bg-teal-400 text-slate-900 font-medium py-3 px-6 rounded-xl transition-colors"
+          disabled={isSubmitting}
+          className="w-full bg-teal-500/90 hover:bg-teal-400 disabled:bg-slate-600 disabled:cursor-not-allowed text-slate-900 font-medium py-3 px-6 rounded-xl transition-colors"
         >
-          Enviar Solicitud
+          {isSubmitting ? 'Enviando...' : 'Enviar Solicitud'}
         </button>
       </form>
     </section>
