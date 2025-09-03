@@ -3,6 +3,9 @@
 import { useState, useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import AdminPanel from './AdminPanel';
+import AdminLogin from './AdminLogin';
+import { usePackData } from '../hooks/usePackData';
 
 // Ensure GSAP is only initialized on client side
 let gsapInitialized = false;
@@ -21,9 +24,11 @@ interface PricingPacksProps {
 }
 
 export default function PricingPacks({ showForm, setShowForm, onPackSelect }: PricingPacksProps) {
-  const [tab, setTab] = useState<"book" | "producto" | "redes" | "eventos">("book");
+  const { packData, updatePacks, isAdmin, toggleAdmin, resetPacks, showLogin, setShowLogin, handleLogin } = usePackData();
+  const [tab, setTab] = useState<string>(Object.keys(packData)[0] || 'book');
   const [showModal, setShowModal] = useState(false);
   const [selectedPack, setSelectedPack] = useState<{ service: string; tier: string; price: string } | null>(null);
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
   const tabsRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -31,189 +36,19 @@ export default function PricingPacks({ showForm, setShowForm, onPackSelect }: Pr
   const extrasRef = useRef<HTMLElement>(null);
   const contactRef = useRef<HTMLElement>(null);
 
-  const PACKS: Record<string, {
-    title: string;
-    blurb: string;
-    tiers: { name: string; price: string; priceNote?: string; features: string[] }[];
-  }> = {
-    book: {
-      title: "Book de fotos (retrato)",
-      blurb:
-        "Sesiones pensadas para armar o renovar tu porfolio: dirección de poses, luz cuidada y retoque profesional.",
-      tiers: [
-        {
-          name: "Básico",
-          price: "$120.000",
-          features: [
-            "1 h de sesión · 1 locación (exterior o estudio)",
-            "1 cambio de vestuario",
-            "25 fotos editadas (color/luz)",
-            "5 retoques de piel de alta calidad",
-            "Entrega en carpeta online · 3–5 días hábiles",
-          ],
-        },
-        {
-          name: "Intermedio",
-          price: "$180.000",
-          features: [
-            "2 h · hasta 2 locaciones cercanas",
-            "2–3 cambios de vestuario",
-            "45 fotos editadas",
-            "10 retoques de piel",
-            "1 reel vertical de 20–30s",
-            "Entrega 3–5 días hábiles",
-          ],
-        },
-        {
-          name: "Premium",
-          price: "$240.000",
-          features: [
-            "3 h · estudio incluido",
-            "3–4 cambios + asesoría de poses",
-            "70 fotos editadas",
-            "20 retoques de piel",
-            "2 reels (15–30s)",
-            "10 impresiones 10×15",
-          ],
-        },
-      ],
-    },
-    producto: {
-      title: "Foto producto / catálogo",
-      blurb:
-        "Imágenes limpias y consistentes para e‑commerce y marketplaces. Flujo preparado para volumen y velocidad.",
-      tiers: [
-        {
-          name: "Básico",
-          price: "$220.000",
-          features: [
-            "Hasta 15 productos",
-            "3 ángulos por producto (45 fotos) — fondo blanco",
-            "PNG recortado + 2000px lado mayor",
-            "Renombrado por SKU",
-            "Entrega 5 días hábiles",
-          ],
-        },
-        {
-          name: "Intermedio",
-          price: "$300.000",
-          features: [
-            "Hasta 30 productos",
-            "4 ángulos + 1 detalle macro (≈150 fotos)",
-            "Fondo blanco + sombras naturales / infinito",
-            "Variantes para ML y Shopify",
-            "1 GIF o mini‑reel behind the scenes",
-            "Entrega 5–7 días hábiles",
-          ],
-        },
-        {
-          name: "Premium",
-          price: "$420.000",
-          features: [
-            "Hasta 60 productos",
-            "5 ángulos por producto (≈300 fotos)",
-            "Mix e‑commerce + lifestyle (props básicos incluidos)",
-            "2 reels (15–30s) o 1 stop‑motion",
-            "Mini catálogo PDF 8–12 páginas",
-            "Entrega 7–10 días hábiles",
-          ],
-        },
-      ],
-    },
-    redes: {
-      title: "Redes sociales (plan mensual)",
-      blurb:
-        "Contenido mensual listo para publicar: fotos, reels, copies y calendario. Opcional: métricas y coordinación de pauta.",
-      tiers: [
-        {
-          name: "Básico",
-          price: "$260.000",
-          priceNote: "/mes",
-          features: [
-            "8 posts estáticos + 2 reels + 8 stories",
-            "1 sesión de contenido de 2 h/mes",
-            "Calendario editorial + copies y hashtags",
-            "1 ronda de cambios",
-          ],
-        },
-        {
-          name: "Intermedio",
-          price: "$340.000",
-          priceNote: "/mes",
-          features: [
-            "12 posts + 4 reels + 16 stories",
-            "1 sesión de 4 h/mes",
-            "Edición de video y subtítulos",
-            "2 plantillas de diseño reutilizables",
-            "Reporte simple de métricas",
-          ],
-        },
-        {
-          name: "Premium",
-          price: "$480.000",
-          priceNote: "/mes",
-          features: [
-            "16 posts + 6 reels + 24 stories",
-            "Hasta 6 h de producción (pueden ser 2 jornadas)",
-            "Guiones de reels + dirección creativa",
-            "Community management light (3 días/semana)",
-            "Reporte avanzado + coordinación de pauta (honorarios incluidos; inversión no incluida)",
-          ],
-        },
-      ],
-    },
-    eventos: {
-      title: "Cobertura de eventos",
-      blurb:
-        "Cobertura foto + video para eventos sociales, corporativos y culturales. Entrega lista para redes.",
-      tiers: [
-        {
-          name: "Básico",
-          price: "$230.000",
-          features: [
-            "Cobertura audiovisual de 3 hs.",
-            "Fotografía: 30 fotos editadas (momentos clave: gente, barra, detalles de marca).",
-            "Video: 2 reels de 30s (Instagram/TikTok)",
-            "1 video resumen de 1 min (vertical)",
-            "Entrega digital en carpeta online",
-            "Plazo de entrega: 3–5 días hábiles",
-          ],
-        },
-        {
-          name: "Intermedio",
-          price: "$300.000",
-          features: [
-            "Cobertura audiovisual de 5 hs.",
-            "Fotografía: 50 fotos editadas (retratos, grupales, detalles de comida/bebida, ambientación).",
-            "Video: 4 reels de 30s",
-            "1 video de 1:30 min",
-            "Entrega digital en carpeta online",
-            "Plazo de entrega: 5 días hábiles",
-          ],
-        },
-        {
-          name: "Premium",
-          price: "$350.000",
-          features: [
-            "Cobertura audiovisual de 7 hs.",
-            "Fotografía: 100 fotos editadas (cobertura completa: asistentes, grupos, artistas, detalles, locación día y noche).",
-            "Video: 6 reels de 30s",
-            "1 video largo de 2:30–3 min",
-            "1 video web de 1 min",
-            "Entrega digital en carpeta online",
-            "Plazo de entrega: 5–7 días hábiles",
-          ],
-        },
-      ],
-    },
-  };
 
-  const tabs: { key: "book" | "producto" | "redes" | "eventos"; label: string; emoji: string }[] = [
+
+  const defaultTabs = [
     { key: "book", label: "Book", emoji: "📸" },
     { key: "producto", label: "Producto/Catálogo", emoji: "📦" },
     { key: "redes", label: "Redes", emoji: "✨" },
     { key: "eventos", label: "Eventos", emoji: "🎉" },
   ];
+
+  const tabs = Object.keys(packData).map(key => {
+    const defaultTab = defaultTabs.find(t => t.key === key);
+    return defaultTab || { key, label: packData[key].title.split(' ')[0], emoji: "📋" };
+  });
 
   const Check = () => (
     <svg viewBox="0 0 24 24" className="w-5 h-5 flex-none" aria-hidden>
@@ -303,7 +138,28 @@ export default function PricingPacks({ showForm, setShowForm, onPackSelect }: Pr
   }, []);
 
   return (
-    <>
+    <section className="mb-16 bg-slate-800/30 rounded-3xl p-8 border border-white/10">
+      {isAdmin && (
+        <div className="flex justify-center gap-2 mb-6">
+          <button
+            onClick={() => setShowAdminPanel(true)}
+            className="bg-orange-500/20 hover:bg-orange-500/30 text-orange-300 px-4 py-2 rounded-lg text-sm border border-orange-500/40"
+          >
+            ⚙️ Admin Panel
+          </button>
+          <button
+            onClick={resetPacks}
+            className="bg-red-500/20 hover:bg-red-500/30 text-red-300 px-4 py-2 rounded-lg text-sm border border-red-500/40"
+          >
+            🔄 Reset Data
+          </button>
+        </div>
+      )}
+      
+      <h2 className="text-3xl md:text-4xl font-bold text-center mb-8 bg-gradient-to-r from-teal-300 to-cyan-300 bg-clip-text text-transparent">
+        Planes que se Adaptan a Ti
+      </h2>
+      
       <div ref={tabsRef} className="flex justify-center gap-2 mb-6 flex-wrap">
           {tabs.map((t) => (
             <button
@@ -324,12 +180,12 @@ export default function PricingPacks({ showForm, setShowForm, onPackSelect }: Pr
 
         <section className="mb-10">
           <h2 ref={titleRef} className="text-center text-2xl md:text-3xl font-medium mb-2 flex items-center justify-center gap-2">
-            <Diamond /> {PACKS[tab].title}
+            <Diamond /> {packData[tab].title}
           </h2>
-          <p ref={blurbRef} className="text-center text-slate-300 max-w-3xl mx-auto mb-6">{PACKS[tab].blurb}</p>
+          <p ref={blurbRef} className="text-center text-slate-300 max-w-3xl mx-auto mb-6">{packData[tab].blurb}</p>
 
           <div ref={cardsRef} className="grid md:grid-cols-3 gap-4 md:gap-6">
-            {PACKS[tab].tiers.map((tier) => (
+            {packData[tab].tiers.map((tier) => (
               <div
                 key={tier.name}
                 className="rounded-2xl bg-slate-800/60 border border-white/10 shadow-xl p-6 flex flex-col"
@@ -360,7 +216,7 @@ export default function PricingPacks({ showForm, setShowForm, onPackSelect }: Pr
                       try {
                         console.log('Button clicked:', tier.name);
                         setSelectedPack({
-                          service: PACKS[tab].title,
+                          service: packData[tab].title,
                           tier: tier.name,
                           price: tier.price + (tier.priceNote || '')
                         });
@@ -422,7 +278,26 @@ export default function PricingPacks({ showForm, setShowForm, onPackSelect }: Pr
         </section>
 
       <footer className="text-center text-xs text-slate-400 mt-8">
+        <button
+          onClick={toggleAdmin}
+          className="text-slate-500 hover:text-slate-400 text-xs"
+        >
+          {isAdmin ? '👤 Exit Admin' : '🔐 Admin'}
+        </button>
       </footer>
+
+      <AdminPanel
+        isOpen={showAdminPanel}
+        onClose={() => setShowAdminPanel(false)}
+        packData={packData}
+        onUpdatePacks={updatePacks}
+      />
+
+      <AdminLogin
+        isOpen={showLogin}
+        onClose={() => setShowLogin(false)}
+        onLogin={handleLogin}
+      />
 
       {/* Modal */}
       {showModal && selectedPack && (
@@ -440,15 +315,13 @@ export default function PricingPacks({ showForm, setShowForm, onPackSelect }: Pr
             <div className="flex flex-col gap-3">
               <button
                 onClick={() => {
-                  const serviceMap: Record<string, string> = {
-                    "Book de fotos (retrato)": "book",
-                    "Foto producto / catálogo": "producto", 
-                    "Redes sociales (plan mensual)": "redes",
-                    "Cobertura de eventos": "eventos"
-                  };
+                  const serviceMap: Record<string, string> = {};
+                  Object.keys(packData).forEach(key => {
+                    serviceMap[packData[key].title] = key;
+                  });
                   onPackSelect?.({
                     ...selectedPack,
-                    serviceKey: serviceMap[selectedPack.service] || "personalizado"
+                    serviceKey: serviceMap[selectedPack.service] || tab
                   });
                   setShowForm(true);
                   setShowModal(false);
@@ -480,6 +353,6 @@ export default function PricingPacks({ showForm, setShowForm, onPackSelect }: Pr
           </div>
         </div>
       )}
-    </>
+    </section>
   );
 }
