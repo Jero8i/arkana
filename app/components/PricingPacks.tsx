@@ -354,15 +354,24 @@ export default function PricingPacks({ showForm, setShowForm, onPackSelect }: Pr
                 </ul>
                 <div className="mt-6">
                   <button 
-                    onClick={() => {
-                      setSelectedPack({
-                        service: PACKS[tab].title,
-                        tier: tier.name,
-                        price: tier.price + (tier.priceNote || '')
-                      });
-                      setShowModal(true);
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      try {
+                        console.log('Button clicked:', tier.name);
+                        setSelectedPack({
+                          service: PACKS[tab].title,
+                          tier: tier.name,
+                          price: tier.price + (tier.priceNote || '')
+                        });
+                        setShowModal(true);
+                      } catch (error) {
+                        console.error('Button click error:', error);
+                        alert('Error: ' + (error instanceof Error ? error.message : String(error)));
+                      }
                     }}
-                    className="w-full rounded-xl bg-teal-500/90 hover:bg-teal-400 text-slate-900 font-medium py-2.5 transition"
+                    className="w-full rounded-xl bg-teal-500/90 hover:bg-teal-400 text-slate-900 font-medium py-2.5 transition cursor-pointer"
+                    type="button"
                   >
                     Pedir este pack
                   </button>
@@ -392,8 +401,19 @@ export default function PricingPacks({ showForm, setShowForm, onPackSelect }: Pr
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
             <button 
-              onClick={() => setShowForm(!showForm)}
-              className="rounded-xl bg-teal-500/90 hover:bg-teal-400 text-slate-900 font-medium px-4 py-2"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                try {
+                  console.log('Solicitar button clicked, current showForm:', showForm);
+                  setShowForm(!showForm);
+                } catch (error) {
+                  console.error('Solicitar button error:', error);
+                  alert('Error: ' + (error instanceof Error ? error.message : String(error)));
+                }
+              }}
+              className="rounded-xl bg-teal-500/90 hover:bg-teal-400 text-slate-900 font-medium px-4 py-2 cursor-pointer"
+              type="button"
             >
               {showForm ? 'Ocultar Formulario' : 'Solicitar Presupuesto'}
             </button>
