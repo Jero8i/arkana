@@ -95,9 +95,9 @@ export default function QuienesSomos() {
         
         <div ref={cardsRef} className="grid md:grid-cols-3 gap-6 mt-8">
           <div className="text-center p-4 bg-slate-700/30 rounded-xl border border-white/5">
-            <div className="text-3xl mb-2">📸</div>
-            <h3 className="font-semibold text-teal-300 mb-2">Experiencia</h3>
-            <p className="text-sm text-slate-300">Más de 5 años creando contenido visual de calidad</p>
+            <div className="text-3xl mb-2">🌟</div>
+            <h3 className="font-semibold text-teal-300 mb-2">Frescura</h3>
+            <p className="text-sm text-slate-300">Perspectiva joven y creativa en cada proyecto</p>
           </div>
           
           <div className="text-center p-4 bg-slate-700/30 rounded-xl border border-white/5">
