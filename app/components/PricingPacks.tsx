@@ -1,6 +1,18 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+// Ensure GSAP is only initialized on client side
+let gsapInitialized = false;
+
+const initGSAP = () => {
+  if (typeof window !== "undefined" && !gsapInitialized) {
+    gsap.registerPlugin(ScrollTrigger);
+    gsapInitialized = true;
+  }
+};
 
 interface PricingPacksProps {
   showForm: boolean;
@@ -12,7 +24,12 @@ export default function PricingPacks({ showForm, setShowForm, onPackSelect }: Pr
   const [tab, setTab] = useState<"book" | "producto" | "redes" | "eventos">("book");
   const [showModal, setShowModal] = useState(false);
   const [selectedPack, setSelectedPack] = useState<{ service: string; tier: string; price: string } | null>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const tabsRef = useRef<HTMLDivElement>(null);
+  const cardsRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const blurbRef = useRef<HTMLParagraphElement>(null);
+  const extrasRef = useRef<HTMLElement>(null);
+  const contactRef = useRef<HTMLElement>(null);
 
   const PACKS: Record<string, {
     title: string;
@@ -211,12 +228,83 @@ export default function PricingPacks({ showForm, setShowForm, onPackSelect }: Pr
   );
 
   useEffect(() => {
-    setIsLoaded(true);
+    initGSAP();
+    if (tabsRef.current && typeof window !== "undefined") {
+      gsap.fromTo(
+        tabsRef.current.children,
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: "power2.out", delay: 0.8 }
+      );
+    }
+  }, []);
+
+  useEffect(() => {
+    initGSAP();
+    if (titleRef.current && blurbRef.current && cardsRef.current && typeof window !== "undefined") {
+      gsap.fromTo(
+        titleRef.current,
+        { opacity: 0, scale: 0.9 },
+        { opacity: 1, scale: 1, duration: 0.8, ease: "back.out(1.7)" }
+      );
+      
+      gsap.fromTo(
+        blurbRef.current,
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.6, delay: 0.2, ease: "power2.out" }
+      );
+      
+      gsap.fromTo(
+        cardsRef.current.children,
+        { opacity: 0, y: 40, scale: 0.95 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.8, stagger: 0.15, delay: 0.4, ease: "back.out(1.7)" }
+      );
+    }
+  }, [tab]);
+
+  useEffect(() => {
+    initGSAP();
+    if (extrasRef.current && contactRef.current && typeof window !== "undefined") {
+      const timer = setTimeout(() => {
+        gsap.fromTo(
+          extrasRef.current,
+          { opacity: 0, y: 30 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: extrasRef.current,
+              start: "top 85%",
+              toggleActions: "play none none reverse"
+            }
+          }
+        );
+
+        gsap.fromTo(
+          contactRef.current,
+          { opacity: 0, y: 30 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: contactRef.current,
+              start: "top 85%",
+              toggleActions: "play none none reverse"
+            }
+          }
+        );
+      }, 100);
+      
+      return () => clearTimeout(timer);
+    }
   }, []);
 
   return (
     <>
-      <div className={`flex justify-center gap-2 mb-6 flex-wrap transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`} style={{ transitionDelay: '0.8s' }}>
+      <div ref={tabsRef} className="flex justify-center gap-2 mb-6 flex-wrap">
           {tabs.map((t) => (
             <button
               key={t.key}
@@ -235,17 +323,16 @@ export default function PricingPacks({ showForm, setShowForm, onPackSelect }: Pr
         </div>
 
         <section className="mb-10">
-          <h2 className={`text-center text-2xl md:text-3xl font-medium mb-2 flex items-center justify-center gap-2 transition-all duration-800 ${isLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-90'}`}>
+          <h2 ref={titleRef} className="text-center text-2xl md:text-3xl font-medium mb-2 flex items-center justify-center gap-2">
             <Diamond /> {PACKS[tab].title}
           </h2>
-          <p className={`text-center text-slate-300 max-w-3xl mx-auto mb-6 transition-all duration-600 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`} style={{ transitionDelay: '0.2s' }}>{PACKS[tab].blurb}</p>
+          <p ref={blurbRef} className="text-center text-slate-300 max-w-3xl mx-auto mb-6">{PACKS[tab].blurb}</p>
 
-          <div className="grid md:grid-cols-3 gap-4 md:gap-6">
+          <div ref={cardsRef} className="grid md:grid-cols-3 gap-4 md:gap-6">
             {PACKS[tab].tiers.map((tier, i) => (
               <div
                 key={tier.name}
-                className={`rounded-2xl bg-slate-800/60 border border-white/10 shadow-xl p-6 flex flex-col transition-all duration-800 ${isLoaded ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-10 scale-95'}`}
-                style={{ transitionDelay: `${0.4 + i * 0.15}s` }}
+                className="rounded-2xl bg-slate-800/60 border border-white/10 shadow-xl p-6 flex flex-col"
               >
                 <div className="flex items-center gap-2 text-teal-300 mb-1">
                   <Diamond />
@@ -285,7 +372,7 @@ export default function PricingPacks({ showForm, setShowForm, onPackSelect }: Pr
           </div>
         </section>
 
-        <section className={`border-t border-white/10 pt-6 transition-all duration-800 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{ transitionDelay: '1.2s' }}>
+        <section ref={extrasRef} className="border-t border-white/10 pt-6">
           <h3 className="text-xl font-medium mb-2">Extras y Condiciones</h3>
           <ul className="grid md:grid-cols-2 gap-x-6 gap-y-2 text-slate-300 text-sm">
             <li>Hora extra de producción: <span className="text-slate-100 font-medium">$35.000</span></li>
@@ -296,7 +383,7 @@ export default function PricingPacks({ showForm, setShowForm, onPackSelect }: Pr
           </ul>
         </section>
 
-        <section className={`mt-10 bg-white/5 rounded-2xl p-6 border border-white/10 transition-all duration-800 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{ transitionDelay: '1.4s' }}>
+        <section ref={contactRef} className="mt-10 bg-white/5 rounded-2xl p-6 border border-white/10">
           <h3 className="text-xl font-medium mb-2">¿Necesitás algo personalizado?</h3>
           <p className="text-slate-200">
             Además de nuestros packs, ofrecemos presupuestos personalizados según tu propuesta. 
