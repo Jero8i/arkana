@@ -65,9 +65,7 @@ export default function SolicitarPresupuesto({ selectedPack }: SolicitarPresupue
     setSubmitStatus('idle');
 
     try {
-      const apiUrl = process.env.NODE_ENV === 'production' 
-        ? 'https://your-server-domain.com/api/send-email' 
-        : 'http://localhost:3001/api/send-email';
+      const apiUrl = 'https://arkanaemailsender.holmesbooking.com/api/sendEmail';
       
       const response = await fetch(apiUrl, {
         method: 'POST',
