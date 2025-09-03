@@ -463,7 +463,7 @@ export default function PricingPacks({ showForm, setShowForm, onPackSelect }: Pr
               <button
                 onClick={() => {
                   const message = `Hola! Me interesa el pack ${selectedPack.service} - ${selectedPack.tier} (${selectedPack.price}). ¿Podrían darme más información?`;
-                  window.open(`https://wa.me/6492616149877?text=${encodeURIComponent(message)}`, '_blank');
+                  window.open(`https://wa.me/5492257400465?text=${encodeURIComponent(message)}`, '_blank');
                   setShowModal(false);
                 }}
                 className="w-full bg-green-600 hover:bg-green-500 text-white font-medium py-3 rounded-xl transition"
