@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 export interface PackTier {
   name: string;
@@ -26,7 +26,7 @@ export default function AdminPanel({ isOpen, onClose, packData, onUpdatePacks }:
   const [editingCategory, setEditingCategory] = useState<string | null>(null);
   const [newCategoryKey, setNewCategoryKey] = useState('');
   const [showNewCategory, setShowNewCategory] = useState(false);
-  const [editingTier, setEditingTier] = useState<number | null>(null);
+  const [, setEditingTier] = useState<number | null>(null);
   const [formData, setFormData] = useState<PackCategory | null>(null);
 
   if (!isOpen) return null;
