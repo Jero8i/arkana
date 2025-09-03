@@ -209,6 +209,12 @@ export function usePackData() {
     if (password === ADMIN_PASSWORD) {
       setIsAdmin(true);
       localStorage.setItem('photography-admin', 'true');
+      setTimeout(() => {
+        const pricingSection = document.querySelector('section[data-pricing-section]');
+        if (pricingSection) {
+          pricingSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
       return true;
     }
     return false;

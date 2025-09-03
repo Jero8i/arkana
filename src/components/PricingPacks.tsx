@@ -138,7 +138,7 @@ export default function PricingPacks({ showForm, setShowForm, onPackSelect }: Pr
   }, []);
 
   return (
-    <section className="mb-16 bg-slate-800/30 rounded-3xl p-8 border border-white/10">
+    <section data-pricing-section className="mb-16 bg-slate-800/30 rounded-3xl p-8 border border-white/10">
       {isAdmin && (
         <div className="flex justify-center gap-2 mb-6">
           <button
@@ -152,6 +152,12 @@ export default function PricingPacks({ showForm, setShowForm, onPackSelect }: Pr
             className="bg-red-500/20 hover:bg-red-500/30 text-red-300 px-4 py-2 rounded-lg text-sm border border-red-500/40"
           >
             🔄 Reset Data
+          </button>
+          <button
+            onClick={toggleAdmin}
+            className="bg-slate-500/20 hover:bg-slate-500/30 text-slate-300 px-4 py-2 rounded-lg text-sm border border-slate-500/40"
+          >
+            👤 Exit Admin
           </button>
         </div>
       )}
